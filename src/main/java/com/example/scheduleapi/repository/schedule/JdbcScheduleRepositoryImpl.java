@@ -10,6 +10,8 @@ import org.springframework.stereotype.Repository;
 import javax.sql.DataSource;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
+import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class JdbcScheduleRepositoryImpl implements ScheduleRepository{
@@ -37,5 +39,30 @@ public class JdbcScheduleRepositoryImpl implements ScheduleRepository{
         return new ScheduleResponseDto(id, schedule.getContent(), null,null,null);
     }
 
+    @Override
+    public Optional<ScheduleResponseDto> findById(Long id) {
+        String sql = """
+                SELECT s.id,u.NAME, s.content, s.created_at,s.updated_at
+                FROM SCHEDULES s JOIN USERS u
+                ON s.user_id=u.user_id
+                WHERE s.id= ?
+                """;
+        List<ScheduleResponseDto> result = jdbcTemplate.query(sql, (rs, rowNum) ->
+                new ScheduleResponseDto(
+                        rs.getLong("id"),
+                        rs.getString("content"),
+                        rs.getString("name"),
+                        rs.getTimestamp("created_at").toLocalDateTime(),
+                        rs.getTimestamp("updated_at").toLocalDateTime()
+                ), id
+        );
+
+        return result.stream().findFirst();
+
+
     }
+
+
+
+}
 
