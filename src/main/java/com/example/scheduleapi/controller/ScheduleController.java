@@ -26,5 +26,11 @@ public class ScheduleController {
         return new ResponseEntity<>(service.saveSchedule(requestDto),HttpStatus.CREATED);
     }
 
+    //일정 조회 API
+    @GetMapping("/{id}")
+    public ResponseEntity<ScheduleResponseDto> findSchedule(@PathVariable Long id){
+        return new ResponseEntity<>(service.findSchedule(id),HttpStatus.OK);
+    }
+
 
 }

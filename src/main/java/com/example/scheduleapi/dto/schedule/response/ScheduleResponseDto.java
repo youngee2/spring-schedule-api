@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @Getter
 //단건 조회
 public class ScheduleResponseDto {
-    private Long id; //고유 id
+    private Long id; //일정 고유 id
     private String content; //할 일
     private String userName; //작성자명
 
