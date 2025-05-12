@@ -15,6 +15,6 @@ public class ScheduleListResponseDto {
     private String userName; //작성자명
 
     @JsonFormat(pattern = "yyyy-MM-dd") 
-    private LocalDateTime updateAt; //날짜
+    private LocalDateTime updatedAt; //날짜
 
 }

@@ -5,9 +5,14 @@ import com.example.scheduleapi.dto.schedule.request.ScheduleCreateRequestDto;
 import com.example.scheduleapi.dto.schedule.response.ScheduleResponseDto;
 import com.example.scheduleapi.service.ScheduleService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/schedules") //공통 url
@@ -26,10 +31,20 @@ public class ScheduleController {
         return new ResponseEntity<>(service.saveSchedule(requestDto),HttpStatus.CREATED);
     }
 
-    //일정 조회 API
+    //해당 일정 조회 API
     @GetMapping("/{id}")
     public ResponseEntity<ScheduleResponseDto> findSchedule(@PathVariable Long id){
         return new ResponseEntity<>(service.findSchedule(id),HttpStatus.OK);
+    }
+
+    //조건에 해당되는 전체 일정 조회 API
+    @GetMapping
+    public ResponseEntity<List<ScheduleResponseDto>> findAllSchedules(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false)
+            @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate updatedAt
+    ){
+        return new ResponseEntity<>(service.findAllSchedules(name,updatedAt),HttpStatus.OK);
     }
 
 
