@@ -1,6 +1,7 @@
 package com.example.api.schedule.service;
 
 import com.example.api.schedule.dto.request.ScheduleCreateRequestDto;
+import com.example.api.schedule.dto.request.ScheduleUpdateRequestDto;
 import com.example.api.schedule.dto.response.ScheduleResponseDto;
 
 import java.time.LocalDate;
@@ -17,4 +18,7 @@ public interface ScheduleService {
     
     //해당 일정 삭제
     int deleteSchedule(Long id, String password);
+
+    //해당 일정 수정
+    ScheduleResponseDto updateSchedule(Long id, ScheduleUpdateRequestDto dto);
 }

@@ -26,7 +26,7 @@ public class Schedule {
     private LocalDateTime updatedAt; //일정 수정일
 
 
-    // 저장 생성자
+    //생성자
     public Schedule(String content, Long userId, String password) {
         this(null, content, userId, password, null, null);
     }

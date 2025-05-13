@@ -1,5 +1,6 @@
 package com.example.api.schedule.service;
 
+import com.example.api.schedule.dto.request.ScheduleUpdateRequestDto;
 import com.example.api.schedule.entity.Schedule;
 import com.example.api.schedule.dto.request.ScheduleCreateRequestDto;
 import com.example.api.schedule.dto.response.ScheduleResponseDto;
@@ -21,6 +22,7 @@ public class ScheduleServiceImpl implements ScheduleService {
     private final ScheduleRepository scheduleRepository;
 
 
+    //일정 저장 메서드
     @Override
     public ScheduleResponseDto saveSchedule(ScheduleCreateRequestDto requestDto) {
         Schedule schedule = new Schedule(requestDto.getContent(), requestDto.getUserId(), requestDto.getPassword());
@@ -28,12 +30,14 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
 
+    //단건 일정 조회 메서드
     @Override
     public ScheduleResponseDto findSchedule(Long id) {
         return scheduleRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("해당 일정이 존재하지 않습니다."));
     }
 
+    //전체 조회 메서드
     @Override
     public List<ScheduleResponseDto> findAllFilterSchedules(String name, LocalDate updatedAt) {
         List<Object> params = new ArrayList<>();
@@ -62,10 +66,10 @@ public class ScheduleServiceImpl implements ScheduleService {
         result.put("conditions",conditions);
 
         return scheduleRepository.findAllFilterSchedules(result);
-
     }
 
 
+    //삭제 메서드
     @Override
     public int deleteSchedule(Long id, String password) {
 
@@ -75,5 +79,17 @@ public class ScheduleServiceImpl implements ScheduleService {
         }else{
             return scheduleRepository.deleteSchedule(id,password);
         }
+    }
+
+    // 수정 메서드
+    @Override
+    public ScheduleResponseDto updateSchedule(Long id, ScheduleUpdateRequestDto dto) {
+        if(dto.getUserName()==null || dto.getContent()==null || dto.getPassword().isBlank()){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
+        ScheduleResponseDto responseDto = scheduleRepository
+                .updateSchedule(id, dto.getUserName(), dto.getContent(), dto.getPassword(), LocalDateTime.now())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "수정 실패"));
+        return responseDto;
     }
 }
