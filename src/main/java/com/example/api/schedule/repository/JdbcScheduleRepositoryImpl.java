@@ -10,11 +10,9 @@ import org.springframework.stereotype.Repository;
 import javax.sql.DataSource;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Repository
@@ -63,61 +61,29 @@ public class JdbcScheduleRepositoryImpl implements ScheduleRepository {
         return result.stream().findFirst();
     }
 
-    //조건 없이 전체 조회
-    @Override
-    public List<ScheduleResponseDto> findAllSchedules() {
-        String sql= """
-                SELECT s.id,u.NAME, s.content, s.created_at,s.updated_at
-                FROM SCHEDULES s JOIN USERS u
-                ON s.user_id=u.user_id
-                """;
 
-        return jdbcTemplate.query(sql, (rs, rowNum) ->
-                new ScheduleResponseDto(
-                        rs.getLong("id"),
-                        rs.getString("content"),
-                        rs.getString("name"),
-                        rs.getTimestamp("created_at").toLocalDateTime(),
-                        rs.getTimestamp("updated_at").toLocalDateTime()
-                ));
-    }
+
+
 
     //필터링된 전체 조회
     @Override
-    public List<ScheduleResponseDto> findAllFilterSchedules(String name, LocalDate updatedAt) {
+    public List<ScheduleResponseDto> findAllFilterSchedules(Map<String,Object> result) {
         StringBuilder sql = new StringBuilder("""
                 SELECT s.id,u.NAME, s.content, s.created_at,s.updated_at
                 FROM SCHEDULES s JOIN USERS u
                 ON s.user_id=u.user_id
                 """);
 
+        List<Object> params = Optional.ofNullable((List<Object>) result.get("Params")).orElse(new ArrayList<>());
+        List<String> conditions = (List<String>) result.get("conditions");
+
         // 파라미터 순서대로 값 저장
-        List<Object> params = new ArrayList<>();
-        //조건 저장
-        List<String> conditions = new ArrayList<>();
-
-        //name이 null이 아니고 공백이 아닐 때 
-        //name에 값이 있는 경우
-        if (name != null && !name.isBlank()) {
-            conditions.add("u.name = ?");
-            params.add(name.trim()); // 공백 제거
-        }
-
-        //updateAt이 null이 아닐 때
-        if (updatedAt != null) {
-            LocalDateTime from = updatedAt.atStartOfDay();               // 00:00:00
-            LocalDateTime to = updatedAt.atTime(LocalTime.MAX);          // 23:59:59.999999999
-            conditions.add("s.updated_at BETWEEN ? AND ?");
-            params.add(from);
-            params.add(to);
-        }
-
         // conditions 리스트가 비어있지 않은 경우.
         if (!conditions.isEmpty()) {
             sql.append("WHERE ");
-            sql.append(String.join(" AND ", conditions));
-            System.out.println(sql.toString());
+            sql.append(String.join(" AND ",conditions));
         }
+        sql.append(" ORDER BY s.updated_at DESC");
 
         return jdbcTemplate.query(sql.toString(),params.toArray(), (rs, rowNum) ->
                 new ScheduleResponseDto(
@@ -128,5 +94,12 @@ public class JdbcScheduleRepositoryImpl implements ScheduleRepository {
                         rs.getTimestamp("updated_at").toLocalDateTime()
                 )
         );
+    }
+
+
+    //일정 삭제
+    @Override
+    public int deleteSchedule(Long id, String password) {
+        return  jdbcTemplate.update("delete from schedules WHERE id=? AND password=?", id,password);
     }
 }

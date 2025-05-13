@@ -1,6 +1,7 @@
 package com.example.api.schedule.controller;
 
 import com.example.api.schedule.dto.request.ScheduleCreateRequestDto;
+import com.example.api.schedule.dto.request.ScheduleDeleteRequestDto;
 import com.example.api.schedule.dto.response.ScheduleResponseDto;
 import com.example.api.schedule.service.ScheduleService;
 import lombok.RequiredArgsConstructor;
@@ -43,8 +44,14 @@ public class ScheduleController {
             @RequestParam(required = false)
             @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate updatedAt
     ){
-        return new ResponseEntity<>(service.findAllSchedules(name,updatedAt),HttpStatus.OK);
+        List<ScheduleResponseDto> result = service.findAllFilterSchedules(name, updatedAt);
+        return new ResponseEntity<>(result,HttpStatus.OK);
     }
 
-
+    //해당 일정 삭제 API
+    @DeleteMapping
+    public ResponseEntity<Void> deleteSchedule(@RequestBody ScheduleDeleteRequestDto dto) {
+        service.deleteSchedule(dto.getId(),dto.getPassword());
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 }
