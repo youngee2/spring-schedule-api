@@ -14,7 +14,7 @@ public interface ScheduleService {
     ScheduleResponseDto findSchedule(Long id);
 
     //조건에 해당하는 일정 전체 조회
-    List<ScheduleResponseDto> findAllFilterSchedules(String name, LocalDate updateAt);
+    List<ScheduleResponseDto> findAllFilterSchedules(String name, Long userId, LocalDate updateAt);
     
     //해당 일정 삭제
     int deleteSchedule(Long id, String password);
