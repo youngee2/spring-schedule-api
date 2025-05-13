@@ -42,10 +42,11 @@ public class ScheduleController {
     @GetMapping
     public ResponseEntity<List<ScheduleResponseDto>> findAllSchedules(
             @RequestParam(required = false) String name,
+            @RequestParam(required = false) Long userId, //회원 아이디로도 조회 가능하게 수정
             @RequestParam(required = false)
             @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate updatedAt
     ){
-        List<ScheduleResponseDto> result = service.findAllFilterSchedules(name, updatedAt);
+        List<ScheduleResponseDto> result = service.findAllFilterSchedules(name, userId,updatedAt);
         return new ResponseEntity<>(result,HttpStatus.OK);
     }
 

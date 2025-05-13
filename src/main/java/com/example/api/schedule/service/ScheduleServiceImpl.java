@@ -39,7 +39,7 @@ public class ScheduleServiceImpl implements ScheduleService {
 
     //전체 조회 메서드
     @Override
-    public List<ScheduleResponseDto> findAllFilterSchedules(String name, LocalDate updatedAt) {
+    public List<ScheduleResponseDto> findAllFilterSchedules(String name,Long userId,LocalDate updatedAt) {
         List<Object> params = new ArrayList<>();
         //조건 저장
         List<String> conditions = new ArrayList<>();
@@ -51,6 +51,12 @@ public class ScheduleServiceImpl implements ScheduleService {
         if (name != null && !name.isBlank()) {
             conditions.add("u.name = ?");
             params.add(name.trim()); // 공백 제거
+        }
+
+        //userId에 값이 있는 경우
+        if (userId!=null) {
+            conditions.add("u.user_id = ?");
+            params.add(userId);
         }
 
         //updateAt이 null이 아닐 때
