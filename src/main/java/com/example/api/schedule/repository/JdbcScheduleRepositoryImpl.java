@@ -25,10 +25,11 @@ public class JdbcScheduleRepositoryImpl implements ScheduleRepository {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
+    //일정 저장
     @Override
     public ScheduleResponseDto saveSchedule(Schedule schedule) {
         String query = "INSERT INTO SCHEDULES (CONTENT, USER_ID, PASSWORD) VALUES(?, ?, ?)";
-
+        
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(conn -> {
             PreparedStatement ps = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
@@ -38,9 +39,9 @@ public class JdbcScheduleRepositoryImpl implements ScheduleRepository {
             return ps;
         }, keyHolder);
         Long id = keyHolder.getKey().longValue();
-        System.out.println("Generated key: " + id);
         return new ScheduleResponseDto(id, schedule.getContent(), null, null, null);
     }
+
 
     @Override
     public Optional<ScheduleResponseDto> findById(Long id) {
