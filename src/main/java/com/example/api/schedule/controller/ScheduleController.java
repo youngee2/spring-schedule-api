@@ -5,6 +5,7 @@ import com.example.api.schedule.dto.request.ScheduleDeleteRequestDto;
 import com.example.api.schedule.dto.request.ScheduleUpdateRequestDto;
 import com.example.api.schedule.dto.response.ScheduleResponseDto;
 import com.example.api.schedule.service.ScheduleService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.format.annotation.DateTimeFormat;
@@ -12,23 +13,20 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.awt.print.Pageable;
 import java.time.LocalDate;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/schedules") //공통 url
+@RequiredArgsConstructor
 
 public class ScheduleController {
     private final ScheduleService service;
 
-    //생성자 주입
-    public ScheduleController(ScheduleService service){
-        this.service=service;
-    }
-
     //일정 생성 API
     @PostMapping
-    public ResponseEntity<ScheduleResponseDto> createSchedule(@RequestBody ScheduleCreateRequestDto requestDto){
+    public ResponseEntity<ScheduleResponseDto> createSchedule(@RequestBody @Valid ScheduleCreateRequestDto requestDto){
         return new ResponseEntity<>(service.saveSchedule(requestDto),HttpStatus.CREATED);
     }
 
@@ -48,6 +46,7 @@ public class ScheduleController {
     ){
         List<ScheduleResponseDto> result = service.findAllFilterSchedules(name, userId,updatedAt);
         return new ResponseEntity<>(result,HttpStatus.OK);
+
     }
 
     //해당 일정 삭제 API
@@ -59,7 +58,7 @@ public class ScheduleController {
 
     //해당 일정 수정 API
     @PatchMapping("/{id}")
-    public ResponseEntity<Void> updateSchedule(@PathVariable Long id, @RequestBody ScheduleUpdateRequestDto dto) {
+    public ResponseEntity<Void> updateSchedule(@PathVariable Long id, @RequestBody @Valid ScheduleUpdateRequestDto dto) {
         service.updateSchedule(id, dto);
         return new ResponseEntity<>(HttpStatus.OK);
     }

@@ -1,7 +1,8 @@
 package com.example.api.user.repository;
 
+import com.example.api.user.dto.response.UserSaveResponseDto;
 import com.example.api.user.entity.User;
 
 public interface UserRepository {
-    Long save(User user);
+    UserSaveResponseDto save(User user);
 }
