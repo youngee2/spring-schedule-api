@@ -2,6 +2,7 @@ package com.example.api.schedule.controller;
 
 import com.example.api.schedule.dto.request.ScheduleCreateRequestDto;
 import com.example.api.schedule.dto.request.ScheduleDeleteRequestDto;
+import com.example.api.schedule.dto.request.ScheduleUpdateRequestDto;
 import com.example.api.schedule.dto.response.ScheduleResponseDto;
 import com.example.api.schedule.service.ScheduleService;
 import lombok.RequiredArgsConstructor;
@@ -52,6 +53,13 @@ public class ScheduleController {
     @DeleteMapping
     public ResponseEntity<Void> deleteSchedule(@RequestBody ScheduleDeleteRequestDto dto) {
         service.deleteSchedule(dto.getId(),dto.getPassword());
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    //해당 일정 수정 API
+    @PatchMapping("/{id}")
+    public ResponseEntity<Void> updateSchedule(@PathVariable Long id, @RequestBody ScheduleUpdateRequestDto dto) {
+        service.updateSchedule(id, dto);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

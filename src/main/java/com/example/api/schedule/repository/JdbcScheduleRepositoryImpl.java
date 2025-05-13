@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 import javax.sql.DataSource;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -47,16 +48,16 @@ public class JdbcScheduleRepositoryImpl implements ScheduleRepository {
                 SELECT s.id,u.NAME, s.content, s.created_at,s.updated_at
                 FROM SCHEDULES s JOIN USERS u
                 ON s.user_id=u.user_id
-                
+                WHERE s.id=?
                 """;
-        List<ScheduleResponseDto> result = jdbcTemplate.query(sql, (rs, rowNum) ->
+        List<ScheduleResponseDto> result = jdbcTemplate.query(sql,  new Object[]{id}, (rs, rowNum) ->
                 new ScheduleResponseDto(
                         rs.getLong("id"),
                         rs.getString("content"),
                         rs.getString("name"),
                         rs.getTimestamp("created_at").toLocalDateTime(),
                         rs.getTimestamp("updated_at").toLocalDateTime()
-                ), id
+                )
         );
         return result.stream().findFirst();
     }
@@ -101,5 +102,19 @@ public class JdbcScheduleRepositoryImpl implements ScheduleRepository {
     @Override
     public int deleteSchedule(Long id, String password) {
         return  jdbcTemplate.update("delete from schedules WHERE id=? AND password=?", id,password);
+    }
+
+
+    //일정 수정
+    @Override
+    public Optional<ScheduleResponseDto> updateSchedule(Long id, String userName, String content, String password, LocalDateTime updateAt) {
+        String sql= """
+                UPDATE schedules
+                SET content = ?, updated_at = ?, user_id= (SELECT user_id FROM users WHERE name= ?)
+                WHERE id=? AND password=?
+                """;
+
+        jdbcTemplate.update(sql,content,LocalDateTime.now(), userName,id, password);
+        return findById(id);
     }
 }
